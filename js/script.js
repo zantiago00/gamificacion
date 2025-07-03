@@ -3,6 +3,7 @@
         const progressBar = document.getElementById('progress-bar');
 const scoreEl = document.getElementById("score");
 const badgesEl = document.getElementById("badges");
+const finalScoreEl = document.getElementById("final-score");
 let score = parseInt(localStorage.getItem("score") || "0");
 function updateScore(points){
     score += points;
@@ -25,6 +26,9 @@ scoreEl.textContent = `Puntos: ${score}`;
                 screen.classList.toggle('active', screen.id === screenId);
             });
             currentScreen = screenId;
+            if(screenId === 'final-screen' && finalScoreEl){
+                finalScoreEl.textContent = `Puntuaci\u00f3n final: ${score}`;
+            }
             updateProgressBar();
         }
         
@@ -290,10 +294,20 @@ let level2Attempts = 0;
             });
             document.getElementById('draggable-options').innerHTML = '';
             document.getElementById('level2-feedback').textContent = '';
-            
+
             // Volver a la pantalla de bienvenida
             showScreen('welcome-screen');
         });
+
+        const clearBtn = document.getElementById('clear-progress-btn');
+        if(clearBtn){
+            clearBtn.addEventListener('click', () => {
+                localStorage.removeItem('score');
+                score = 0;
+                scoreEl.textContent = `Puntos: ${score}`;
+                showScreen('welcome-screen');
+            });
+        }
 
         // Iniciar la aplicación
         showScreen('welcome-screen');
