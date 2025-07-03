@@ -295,6 +295,13 @@ let level2Attempts = 0;
             showScreen('welcome-screen');
         });
 
+        document.getElementById('reset-score-btn').addEventListener('click', () => {
+            score = 0;
+            scoreEl.textContent = `Puntos: ${score}`;
+            localStorage.removeItem('score');
+            badgesEl.innerHTML = '';
+        });
+
         // Iniciar la aplicación
         showScreen('welcome-screen');
 
