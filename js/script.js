@@ -172,7 +172,7 @@ let level2Attempts = 0;
             const shuffledOptions = [...level2Data.options].sort(() => Math.random() - 0.5);
             
             shuffledOptions.forEach(opt => {
-                optionsContainer.innerHTML += `<div id="${opt.id}" class="draggable bg-blue-100 text-blue-800 font-semibold px-5 py-2 rounded-lg shadow" draggable="true">${opt.text}</div>`;
+                optionsContainer.innerHTML += `<div id="${opt.id}" class="draggable bg-blue-100 text-blue-800 font-semibold px-5 py-2 rounded-lg shadow" draggable="true" tabindex="0" aria-grabbed="false">${opt.text}</div>`;
             });
 
             addLevel2EventListeners();
@@ -182,6 +182,7 @@ let level2Attempts = 0;
             document.querySelectorAll('.draggable').forEach(draggable => {
                 draggable.addEventListener('dragstart', handleDragStart);
                 draggable.addEventListener('dragend', handleDragEnd);
+                draggable.addEventListener('keydown', handleKeyDrag);
             });
 
             document.querySelectorAll('.drop-zone').forEach(zone => {
@@ -197,12 +198,14 @@ let level2Attempts = 0;
 
         function handleDragStart(e) {
             draggedItem = e.target;
+            e.target.setAttribute('aria-grabbed', 'true');
             e.dataTransfer.setData('text/plain', e.target.id);
             setTimeout(() => e.target.classList.add('dragging'), 0);
         }
 
         function handleDragEnd(e) {
             e.target.classList.remove('dragging');
+            e.target.setAttribute('aria-grabbed', 'false');
             draggedItem = null;
         }
 
@@ -217,6 +220,41 @@ let level2Attempts = 0;
             if (e.currentTarget.classList.contains('drop-zone')) {
                 e.currentTarget.classList.remove('over');
             }
+        }
+
+        function handleKeyDrag(e) {
+            if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+
+            const optionsContainer = document.getElementById('draggable-options');
+            const dropZones = Array.from(document.querySelectorAll('.drop-zone'));
+            const targets = [optionsContainer, ...dropZones];
+            const parent = e.target.parentElement;
+            const currentIndex = targets.indexOf(parent);
+            const newIndex = e.key === 'ArrowRight' ? currentIndex + 1 : currentIndex - 1;
+
+            if (newIndex < 0 || newIndex >= targets.length) return;
+
+            const target = targets[newIndex];
+            e.preventDefault();
+            e.target.setAttribute('aria-grabbed', 'true');
+
+            if (target.classList.contains('drop-zone') && target.children.length > 0) {
+                const existing = target.firstElementChild;
+                optionsContainer.appendChild(existing);
+                target.classList.remove('filled');
+            }
+
+            if (parent.classList.contains('drop-zone')) {
+                parent.classList.remove('filled');
+            }
+
+            target.appendChild(e.target);
+
+            if (target.classList.contains('drop-zone')) {
+                target.classList.add('filled');
+            }
+
+            e.target.setAttribute('aria-grabbed', 'false');
         }
 
         function handleDrop(e) {
@@ -235,6 +273,7 @@ let level2Attempts = 0;
             }
 
             dropTarget.appendChild(draggedItem);
+            draggedItem.setAttribute('aria-grabbed', 'false');
 
             if (dropTarget.classList.contains('drop-zone')) {
                 dropTarget.classList.add('filled');

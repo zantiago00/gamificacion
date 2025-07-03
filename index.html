@@ -34,7 +34,7 @@
             <p class="text-gray-600 mb-6">
                 Entender la teoría y sus enfoques puede ser complicado, pero es la clave para aprovechar el ecosistema digital. Esta serie de retos se enfoca en facilitar el aprendizaje del concepto de Storytelling Digital.
             </p>
-            <button id="start-btn" class="w-full md:w-auto px-8 py-3 bg-gray-800 text-white font-semibold rounded-lg shadow-md hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-opacity-50 transition-transform transform hover:scale-105">
+            <button id="start-btn" aria-label="Comenzar el juego" class="w-full md:w-auto px-8 py-3 bg-gray-800 text-white font-semibold rounded-lg shadow-md hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-opacity-50 transition-transform transform hover:scale-105">
                 Continuar
             </button>
         </div>
@@ -53,9 +53,9 @@
                     <!-- Las definiciones se insertarán aquí dinámicamente -->
                 </div>
             </div>
-             <div id="level1-feedback" class="mt-4 text-center font-medium"></div>
+             <div id="level1-feedback" role="alert" class="mt-4 text-center font-medium"></div>
             <div class="text-center mt-8">
-                <button id="level1-continue-btn" class="w-full md:w-auto px-8 py-3 bg-gray-800 text-white font-semibold rounded-lg shadow-md hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-opacity-50 transition-transform transform hover:scale-105 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none" disabled>
+                <button id="level1-continue-btn" aria-label="Ir al segundo nivel" class="w-full md:w-auto px-8 py-3 bg-gray-800 text-white font-semibold rounded-lg shadow-md hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-opacity-50 transition-transform transform hover:scale-105 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none" disabled>
                     Continuar
                 </button>
             </div>
@@ -81,9 +81,9 @@
             <div id="draggable-options" class="flex flex-wrap justify-center gap-4 mt-8 min-h-[60px] border-2 border-dashed border-gray-300 rounded-lg p-4">
                 <!-- Las opciones arrastrables se insertarán aquí -->
             </div>
-             <div id="level2-feedback" class="mt-4 text-center font-medium"></div>
+             <div id="level2-feedback" role="alert" class="mt-4 text-center font-medium"></div>
             <div class="text-center mt-8">
-                 <button id="level2-check-btn" class="w-full md:w-auto px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-transform transform hover:scale-105">
+                 <button id="level2-check-btn" aria-label="Comprobar respuestas" class="w-full md:w-auto px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-transform transform hover:scale-105">
                     Comprobar
                 </button>
             </div>
@@ -95,7 +95,7 @@
             <p class="text-gray-600 mb-6">
                 Has completado todos los retos y ahora tienes una mejor comprensión del Storytelling Digital.
             </p>
-            <button id="restart-btn" class="w-full md:w-auto px-8 py-3 bg-gray-800 text-white font-semibold rounded-lg shadow-md hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-opacity-50 transition-transform transform hover:scale-105">
+            <button id="restart-btn" aria-label="Reiniciar el juego" class="w-full md:w-auto px-8 py-3 bg-gray-800 text-white font-semibold rounded-lg shadow-md hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-opacity-50 transition-transform transform hover:scale-105">
                 Volver a Jugar
             </button>
         </div>
