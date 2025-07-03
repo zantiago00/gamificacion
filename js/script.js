@@ -11,17 +11,11 @@ const unlockedLevels = {
 };
 
 // --- SONIDOS ---
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const clickSound = new Audio('sounds/click.wav');
+clickSound.volume = 0.5;
 function playClickSound() {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = 'sine';
-    osc.frequency.value = 880;
-    gain.gain.value = 0.1;
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.1);
+    clickSound.currentTime = 0;
+    clickSound.play();
 }
 function addAudioToButtons() {
     document.querySelectorAll('button').forEach(btn => {
