@@ -12,15 +12,25 @@ const unlockedLevels = {
 };
 
 // --- SONIDOS ---
-const clickSound = new Audio('sounds/click.wav');
+const clickSound = new Audio('https://s3.amazonaws.com/freecodecamp/drums/Cev_H2.mp3');
+const startSound = new Audio('https://s3.amazonaws.com/freecodecamp/drums/RP4_KICK_1.mp3');
+const successSound = new Audio('https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3');
+const failSound = new Audio('https://s3.amazonaws.com/freecodecamp/drums/Dsc_Oh.mp3');
+const beepSound = new Audio('https://cdn.freecodecamp.org/testable-projects-fcc/audio/BeepSound.wav');
 clickSound.volume = 0.5;
-function playClickSound() {
-    clickSound.currentTime = 0;
-    clickSound.play();
+startSound.volume = 0.5;
+successSound.volume = 0.5;
+failSound.volume = 0.5;
+beepSound.volume = 0.5;
+
+function playSound(sound) {
+    sound.currentTime = 0;
+    sound.play();
 }
+
 function addAudioToButtons() {
     document.querySelectorAll('button').forEach(btn => {
-        btn.addEventListener('click', playClickSound);
+        btn.addEventListener('click', () => playSound(clickSound));
     });
 }
 function updateScore(points){
@@ -66,6 +76,9 @@ scoreEl.textContent = `Puntos: ${score}`;
             currentScreen = screenId;
             updateProgressBar();
             updateNavigation();
+            if (screenId === 'final-screen') {
+                playSound(beepSound);
+            }
         }
         
 function updateProgressBar() {
@@ -105,6 +118,7 @@ document.querySelectorAll('.level-btn').forEach(btn => {
             initLevel2();
         }
         showScreen(target);
+        playSound(startSound);
     });
 });
 
@@ -112,9 +126,11 @@ document.getElementById('start-btn').addEventListener('click', () => {
     unlockedLevels['level-1'] = true;
     showScreen('level-1');
     initLevel1();
+    playSound(startSound);
 });
-document.getElementById("begin-btn").addEventListener("click", () => {
-    showScreen("welcome-screen");
+document.getElementById('begin-btn').addEventListener('click', () => {
+    showScreen('welcome-screen');
+    playSound(startSound);
 });
 
         // --- LÓGICA DEL NIVEL 1: UNIR CONCEPTOS ---
@@ -167,6 +183,8 @@ let level2Attempts = 0;
             const clickedElement = event.currentTarget;
             if (Object.values(connections).includes(clickedElement.id) || connections[clickedElement.id]) return;
 
+            playSound(clickSound);
+
             if (clickedElement.parentElement.id === 'concepts') {
                 if (selectedConcept) selectedConcept.classList.remove('selected');
                 selectedConcept = clickedElement;
@@ -199,6 +217,7 @@ let level2Attempts = 0;
                     feedbackEl.className = 'mt-4 text-center font-medium text-green-600';
                     document.getElementById('level1-continue-btn').disabled = false;
                     updateScore(50);
+                    playSound(successSound);
                 } else {
                     level1Attempts++;
                     feedbackEl.textContent = "Algunas conexiones son incorrectas. ¡Inténtalo de nuevo!";
@@ -206,6 +225,7 @@ let level2Attempts = 0;
                         feedbackEl.textContent += " Pista: conecta cada concepto con su definición correspondiente.";
                     }
                     feedbackEl.className = 'mt-4 text-center font-medium text-red-600';
+                    playSound(failSound);
                     setTimeout(resetLevel1, 1500);
                 }
             }
@@ -230,6 +250,7 @@ document.getElementById('level1-continue-btn').addEventListener('click', () => {
     unlockedLevels['level-2'] = true;
     showScreen('level-2');
     initLevel2();
+    playSound(startSound);
 });
         
         // --- LÓGICA DEL NIVEL 2: ARRASTRAR Y SOLTAR ---
@@ -278,6 +299,7 @@ document.getElementById('level1-continue-btn').addEventListener('click', () => {
             e.target.setAttribute('aria-grabbed', 'true');
             e.dataTransfer.setData('text/plain', e.target.id);
             setTimeout(() => e.target.classList.add('dragging'), 0);
+            playSound(clickSound);
         }
 
         function handleDragEnd(e) {
@@ -381,6 +403,7 @@ document.getElementById('level1-continue-btn').addEventListener('click', () => {
                 feedbackEl.className = 'mt-4 text-center font-medium text-green-600';
                 updateScore(50);
                 awardBadge();
+                playSound(successSound);
                 setTimeout(() => showScreen('final-screen'), 1500);
             } else {
                  level2Attempts++;
@@ -389,6 +412,7 @@ document.getElementById('level1-continue-btn').addEventListener('click', () => {
                      feedbackEl.textContent += " Pista: arrastra cada palabra al espacio que mejor complete la frase.";
                  }
                  feedbackEl.className = 'mt-4 text-center font-medium text-red-600';
+                 playSound(failSound);
             }
         });
 
@@ -411,6 +435,7 @@ document.getElementById('restart-btn').addEventListener('click', () => {
     unlockedLevels['level-1'] = false;
     unlockedLevels['level-2'] = false;
     showScreen('start-screen');
+    playSound(startSound);
 });
 
         document.getElementById('reset-score-btn').addEventListener('click', () => {
@@ -418,6 +443,7 @@ document.getElementById('restart-btn').addEventListener('click', () => {
             scoreEl.textContent = `Puntos: ${score}`;
             localStorage.removeItem('score');
             badgesEl.innerHTML = '';
+            playSound(failSound);
         });
 
         // Iniciar la aplicación
