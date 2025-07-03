@@ -526,92 +526,80 @@ document.getElementById('level1-continue-btn').addEventListener('click', () => {
             }
         });
 
-        // --- LÓGICA DEL NIVEL 4: QUIZ FINAL ---
-        const level4Data = [
+        // --- LÓGICA DEL NIVEL 4: COMPLETAR ORACIONES ---
+        const level4FillData = [
             {
-                id: 'm1',
-                text: '¿Cuál es el principal objetivo del Storytelling Digital?',
-                options: [
-                    'Conectar emocionalmente con la audiencia',
-                    'Vender productos inmediatamente',
-                    'Publicar sin planificación'
-                ],
-                answer: 0
+                text: 'En el Storytelling Digital los elementos ___ son fundamentales para crear el ambiente del universo narrativo.',
+                options: ['visuales', 'irrelevantes', 'aleatorios', 'rígidos', 'monótonos', 'ambiguos'],
+                answer: 'visuales'
             },
             {
-                id: 'm2',
-                text: '¿Qué formato facilita más la interacción?',
-                options: [
-                    'Video interactivo',
-                    'Infografía estática',
-                    'Carta impresa'
-                ],
-                answer: 0
+                text: 'Un protagonista bien definido ayuda a que la audiencia se ___ con la historia.',
+                options: ['aburra', 'identifique', 'pierda', 'distraiga', 'desconecte', 'resista'],
+                answer: 'identifique'
             },
             {
-                id: 'm3',
-                text: 'Para mantener la atención del usuario es útil...',
-                options: [
-                    'Usar narrativa coherente y elementos visuales',
-                    'Texto largo sin imágenes',
-                    'Cambiar de tema constantemente'
-                ],
-                answer: 0
+                text: 'El conflicto es la ___ que impulsa la trama hacia adelante.',
+                options: ['fuerza', 'decoración', 'rutina', 'barrera', 'inutilidad', 'desconexión'],
+                answer: 'fuerza'
             }
         ];
 
-        function initLevel4() {
-            const container = document.getElementById('level4-questions');
-            const feedbackEl = document.getElementById('level4-feedback');
-            document.getElementById('level4-check-btn').disabled = false;
-            container.innerHTML = '';
-            feedbackEl.textContent = '';
+        let level4Index = 0;
 
-            level4Data.forEach(q => {
-                let optionsHtml = '';
-                q.options.forEach((opt, idx) => {
-                    optionsHtml += `<label class="block"><input type="radio" name="${q.id}" value="${idx}" class="mr-2">${opt}</label>`;
-                });
-                container.innerHTML += `<div class="space-y-2"><p class="font-medium">${q.text}</p>${optionsHtml}</div>`;
+        function initLevel4() {
+            level4Index = 0;
+            document.getElementById('level4-feedback').textContent = '';
+            showLevel4Question();
+        }
+
+        function showLevel4Question() {
+            const data = level4FillData[level4Index];
+            const container = document.getElementById('level4-questions');
+            const parts = data.text.split('___');
+            container.innerHTML = `
+                <div class="p-4 border rounded-lg">
+                    <p>${parts[0]}<span id="level4-blank" class="font-semibold"></span>${parts[1]}</p>
+                </div>
+                <div id="level4-options" class="flex flex-wrap gap-2 mt-4"></div>
+            `;
+            const optionsContainer = document.getElementById('level4-options');
+            data.options.forEach(word => {
+                const btn = document.createElement('button');
+                btn.textContent = word;
+                btn.className = 'px-3 py-1 border rounded-lg';
+                btn.addEventListener('click', () => handleLevel4Selection(btn, word));
+                optionsContainer.appendChild(btn);
             });
         }
 
-        document.getElementById('level4-check-btn').addEventListener('click', () => {
-            const feedbackEl = document.getElementById('level4-feedback');
-            let allAnswered = true;
-            let allCorrect = true;
-
-            level4Data.forEach(q => {
-                const selected = document.querySelector(`input[name="${q.id}"]:checked`);
-                if (!selected) {
-                    allAnswered = false;
-                    allCorrect = false;
-                    return;
-                }
-                if (parseInt(selected.value) !== q.answer) {
-                    allCorrect = false;
-                }
-            });
-
-            if (!allAnswered) {
-                feedbackEl.textContent = 'Responde todas las preguntas.';
-                feedbackEl.className = 'mt-4 text-center font-medium text-red-600';
-                return;
-            }
-
-            if (allCorrect) {
-                feedbackEl.textContent = '¡Genial! Has completado el quiz.';
-                feedbackEl.className = 'mt-4 text-center font-medium text-green-600';
-                updateScore(50);
-                awardBadge();
+        function handleLevel4Selection(btn, word) {
+            const data = level4FillData[level4Index];
+            if (word === data.answer) {
+                btn.classList.add('bg-green-200');
+                document.getElementById('level4-blank').textContent = word;
+                disableLevel4Options();
                 playSound(successSound);
-                setTimeout(() => showScreen('final-screen'), 1500);
+                level4Index++;
+                if (level4Index < level4FillData.length) {
+                    setTimeout(showLevel4Question, 1000);
+                } else {
+                    updateScore(50);
+                    awardBadge();
+                    document.getElementById('level4-feedback').textContent = '¡Excelente! Has completado todas las oraciones.';
+                    document.getElementById('level4-feedback').className = 'mt-4 text-center font-medium text-green-600';
+                    setTimeout(() => showScreen('final-screen'), 1500);
+                }
             } else {
-                feedbackEl.textContent = 'Hay respuestas incorrectas.';
-                feedbackEl.className = 'mt-4 text-center font-medium text-red-600';
+                btn.classList.add('bg-red-200');
+                btn.disabled = true;
                 playSound(failSound);
             }
-        });
+        }
+
+        function disableLevel4Options() {
+            document.querySelectorAll('#level4-options button').forEach(b => b.disabled = true);
+        }
 
         // --- PANTALLA FINAL Y REINICIO ---
 document.getElementById('restart-btn').addEventListener('click', () => {
@@ -638,7 +626,6 @@ document.getElementById('restart-btn').addEventListener('click', () => {
             // Resetear estado del Nivel 4
             document.getElementById('level4-questions').innerHTML = '';
             document.getElementById('level4-feedback').textContent = '';
-            document.getElementById('level4-check-btn').disabled = false;
 
             // Volver a la pantalla de bienvenida
     unlockedLevels['level-1'] = false;
