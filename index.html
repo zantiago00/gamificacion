@@ -15,7 +15,10 @@
     <div class="main-container w-full">
         <!-- Barra de Progreso -->
         <div class="flex justify-between items-center mb-4">
-            <div id="score" class="font-semibold">Puntos: 0</div>
+            <div class="flex items-center space-x-2">
+                <div id="score" class="font-semibold">Puntos: 0</div>
+                <button id="reset-score-btn" class="text-sm px-2 py-1 bg-gray-800 text-white rounded-md shadow hover:bg-gray-900 focus:outline-none">Reiniciar puntaje</button>
+            </div>
             <div id="badges" class="flex space-x-2"></div>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2.5 mb-8">
