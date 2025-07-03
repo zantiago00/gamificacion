@@ -5,6 +5,7 @@ const scoreEl = document.getElementById("score");
 const badgesEl = document.getElementById("badges");
 let score = parseInt(localStorage.getItem("score") || "0");
 const unlockedLevels = {
+    'start-screen': true,
     'welcome-screen': true,
     'level-1': false,
     'level-2': false
@@ -35,7 +36,7 @@ function awardBadge(){
 scoreEl.textContent = `Puntos: ${score}`;
 
         
-        let currentScreen = 'welcome-screen';
+        let currentScreen = 'start-screen';
         const totalLevels = 2;
 
         function showScreen(screenId) {
@@ -111,6 +112,9 @@ document.getElementById('start-btn').addEventListener('click', () => {
     unlockedLevels['level-1'] = true;
     showScreen('level-1');
     initLevel1();
+});
+document.getElementById("begin-btn").addEventListener("click", () => {
+    showScreen("welcome-screen");
 });
 
         // --- LÓGICA DEL NIVEL 1: UNIR CONCEPTOS ---
@@ -406,7 +410,7 @@ document.getElementById('restart-btn').addEventListener('click', () => {
             // Volver a la pantalla de bienvenida
     unlockedLevels['level-1'] = false;
     unlockedLevels['level-2'] = false;
-    showScreen('welcome-screen');
+    showScreen('start-screen');
 });
 
         document.getElementById('reset-score-btn').addEventListener('click', () => {
@@ -417,6 +421,6 @@ document.getElementById('restart-btn').addEventListener('click', () => {
         });
 
         // Iniciar la aplicación
-        showScreen('welcome-screen');
+        showScreen('start-screen');
         addAudioToButtons();
 
