@@ -21,9 +21,29 @@ scoreEl.textContent = `Puntos: ${score}`;
         const totalLevels = 2;
 
         function showScreen(screenId) {
-            screens.forEach(screen => {
-                screen.classList.toggle('active', screen.id === screenId);
-            });
+            const newScreen = document.getElementById(screenId);
+            const current = document.querySelector('.screen.active');
+
+            if (current && current !== newScreen) {
+                current.classList.add('fade-exit');
+                void current.offsetWidth;
+                current.classList.add('fade-exit-active');
+                current.addEventListener('transitionend', function handler() {
+                    current.classList.remove('active', 'fade-exit', 'fade-exit-active');
+                    current.removeEventListener('transitionend', handler);
+                });
+            }
+
+            if (!newScreen.classList.contains('active')) {
+                newScreen.classList.add('active', 'fade-enter');
+                void newScreen.offsetWidth;
+                newScreen.classList.add('fade-enter-active');
+                newScreen.addEventListener('transitionend', function handler() {
+                    newScreen.classList.remove('fade-enter', 'fade-enter-active');
+                    newScreen.removeEventListener('transitionend', handler);
+                });
+            }
+
             currentScreen = screenId;
             updateProgressBar();
         }
