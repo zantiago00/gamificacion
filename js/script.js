@@ -9,7 +9,8 @@ const unlockedLevels = {
     'welcome-screen': true,
     'level-1': false,
     'level-2': false,
-    'level-3': false
+    'level-3': false,
+    'level-4': false
 };
 
 // --- SONIDOS ---
@@ -17,7 +18,7 @@ const clickSound = new Audio('https://s3.amazonaws.com/freecodecamp/drums/Cev_H2
 const startSound = new Audio('https://s3.amazonaws.com/freecodecamp/drums/RP4_KICK_1.mp3');
 const successSound = new Audio('https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3');
 const failSound = new Audio('https://s3.amazonaws.com/freecodecamp/drums/Dsc_Oh.mp3');
-const beepSound = new Audio('https://cdn.freecodecamp.org/testable-projects-fcc/audio/BeepSound.wav');
+const beepSound = new Audio('https://s3.amazonaws.com/freecodecamp/drums/Chord_1.mp3');
 clickSound.volume = 0.5;
 startSound.volume = 0.5;
 successSound.volume = 0.5;
@@ -48,7 +49,7 @@ scoreEl.textContent = `Puntos: ${score}`;
 
         
         let currentScreen = 'start-screen';
-        const totalLevels = 3;
+        const totalLevels = 4;
 
         function showScreen(screenId) {
             const newScreen = document.getElementById(screenId);
@@ -85,8 +86,9 @@ scoreEl.textContent = `Puntos: ${score}`;
 function updateProgressBar() {
     let progress = 0;
     if (currentScreen === 'level-1') progress = 0;
-    if (currentScreen === 'level-2') progress = 33;
-    if (currentScreen === 'level-3') progress = 66;
+    if (currentScreen === 'level-2') progress = 25;
+    if (currentScreen === 'level-3') progress = 50;
+    if (currentScreen === 'level-4') progress = 75;
     if (currentScreen === 'final-screen') progress = 100;
     progressBar.style.width = `${progress}%`;
 }
@@ -121,6 +123,9 @@ document.querySelectorAll('.level-btn').forEach(btn => {
         }
         if (target === 'level-3') {
             initLevel3();
+        }
+        if (target === 'level-4') {
+            initLevel4();
         }
         showScreen(target);
         playSound(startSound);
@@ -512,6 +517,94 @@ document.getElementById('level1-continue-btn').addEventListener('click', () => {
                 updateScore(50);
                 awardBadge();
                 playSound(successSound);
+                unlockedLevels['level-4'] = true;
+                setTimeout(() => { showScreen('level-4'); initLevel4(); }, 1500);
+            } else {
+                feedbackEl.textContent = 'Hay respuestas incorrectas.';
+                feedbackEl.className = 'mt-4 text-center font-medium text-red-600';
+                playSound(failSound);
+            }
+        });
+
+        // --- LÓGICA DEL NIVEL 4: QUIZ FINAL ---
+        const level4Data = [
+            {
+                id: 'm1',
+                text: '¿Cuál es el principal objetivo del Storytelling Digital?',
+                options: [
+                    'Conectar emocionalmente con la audiencia',
+                    'Vender productos inmediatamente',
+                    'Publicar sin planificación'
+                ],
+                answer: 0
+            },
+            {
+                id: 'm2',
+                text: '¿Qué formato facilita más la interacción?',
+                options: [
+                    'Video interactivo',
+                    'Infografía estática',
+                    'Carta impresa'
+                ],
+                answer: 0
+            },
+            {
+                id: 'm3',
+                text: 'Para mantener la atención del usuario es útil...',
+                options: [
+                    'Usar narrativa coherente y elementos visuales',
+                    'Texto largo sin imágenes',
+                    'Cambiar de tema constantemente'
+                ],
+                answer: 0
+            }
+        ];
+
+        function initLevel4() {
+            const container = document.getElementById('level4-questions');
+            const feedbackEl = document.getElementById('level4-feedback');
+            document.getElementById('level4-check-btn').disabled = false;
+            container.innerHTML = '';
+            feedbackEl.textContent = '';
+
+            level4Data.forEach(q => {
+                let optionsHtml = '';
+                q.options.forEach((opt, idx) => {
+                    optionsHtml += `<label class="block"><input type="radio" name="${q.id}" value="${idx}" class="mr-2">${opt}</label>`;
+                });
+                container.innerHTML += `<div class="space-y-2"><p class="font-medium">${q.text}</p>${optionsHtml}</div>`;
+            });
+        }
+
+        document.getElementById('level4-check-btn').addEventListener('click', () => {
+            const feedbackEl = document.getElementById('level4-feedback');
+            let allAnswered = true;
+            let allCorrect = true;
+
+            level4Data.forEach(q => {
+                const selected = document.querySelector(`input[name="${q.id}"]:checked`);
+                if (!selected) {
+                    allAnswered = false;
+                    allCorrect = false;
+                    return;
+                }
+                if (parseInt(selected.value) !== q.answer) {
+                    allCorrect = false;
+                }
+            });
+
+            if (!allAnswered) {
+                feedbackEl.textContent = 'Responde todas las preguntas.';
+                feedbackEl.className = 'mt-4 text-center font-medium text-red-600';
+                return;
+            }
+
+            if (allCorrect) {
+                feedbackEl.textContent = '¡Genial! Has completado el quiz.';
+                feedbackEl.className = 'mt-4 text-center font-medium text-green-600';
+                updateScore(50);
+                awardBadge();
+                playSound(successSound);
                 setTimeout(() => showScreen('final-screen'), 1500);
             } else {
                 feedbackEl.textContent = 'Hay respuestas incorrectas.';
@@ -542,10 +635,16 @@ document.getElementById('restart-btn').addEventListener('click', () => {
             document.getElementById('level3-timer').textContent = '';
             document.getElementById('level3-check-btn').disabled = false;
 
+            // Resetear estado del Nivel 4
+            document.getElementById('level4-questions').innerHTML = '';
+            document.getElementById('level4-feedback').textContent = '';
+            document.getElementById('level4-check-btn').disabled = false;
+
             // Volver a la pantalla de bienvenida
     unlockedLevels['level-1'] = false;
     unlockedLevels['level-2'] = false;
     unlockedLevels['level-3'] = false;
+    unlockedLevels['level-4'] = false;
     showScreen('start-screen');
     playSound(startSound);
 });
