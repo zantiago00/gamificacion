@@ -54,14 +54,11 @@ body {
     padding: 0.25rem 0.5rem;
     font-size: 0.875rem;
     font-weight: 600;
-    color: #ffffff;
-    background-color: #1f2937; /* gray-800 */
     border-radius: 0.375rem;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.2s, transform 0.2s;
+    transition: transform 0.2s;
 }
 #reset-score-btn:hover {
-    background-color: #111827; /* gray-900 */
     transform: scale(1.05);
 }
 #reset-score-btn:focus {
@@ -82,4 +79,32 @@ body {
 .fade-exit-active {
     opacity: 0;
     transition: opacity 0.5s ease-in-out;
+}
+
+/* Botones vibrantes con efecto de brillo */
+.vibrant-btn {
+    position: relative;
+    overflow: hidden;
+    background-color: #ff0066;
+    color: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+.vibrant-btn:hover {
+    transform: scale(1.05);
+}
+.vibrant-btn::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.4);
+    transform: skewX(-20deg);
+    transition: left 0.5s;
+}
+.vibrant-btn:hover::after {
+    left: 100%;
 }
