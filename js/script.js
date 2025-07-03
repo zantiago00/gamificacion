@@ -8,7 +8,8 @@ const unlockedLevels = {
     'start-screen': true,
     'welcome-screen': true,
     'level-1': false,
-    'level-2': false
+    'level-2': false,
+    'level-3': false
 };
 
 // --- SONIDOS ---
@@ -47,7 +48,7 @@ scoreEl.textContent = `Puntos: ${score}`;
 
         
         let currentScreen = 'start-screen';
-        const totalLevels = 2;
+        const totalLevels = 3;
 
         function showScreen(screenId) {
             const newScreen = document.getElementById(screenId);
@@ -84,7 +85,8 @@ scoreEl.textContent = `Puntos: ${score}`;
 function updateProgressBar() {
     let progress = 0;
     if (currentScreen === 'level-1') progress = 0;
-    if (currentScreen === 'level-2') progress = 50;
+    if (currentScreen === 'level-2') progress = 33;
+    if (currentScreen === 'level-3') progress = 66;
     if (currentScreen === 'final-screen') progress = 100;
     progressBar.style.width = `${progress}%`;
 }
@@ -116,6 +118,9 @@ document.querySelectorAll('.level-btn').forEach(btn => {
         }
         if (target === 'level-2') {
             initLevel2();
+        }
+        if (target === 'level-3') {
+            initLevel3();
         }
         showScreen(target);
         playSound(startSound);
@@ -404,7 +409,8 @@ document.getElementById('level1-continue-btn').addEventListener('click', () => {
                 updateScore(50);
                 awardBadge();
                 playSound(successSound);
-                setTimeout(() => showScreen('final-screen'), 1500);
+                unlockedLevels['level-3'] = true;
+                setTimeout(() => { showScreen('level-3'); initLevel3(); }, 1500);
             } else {
                  level2Attempts++;
                  feedbackEl.textContent = "Casi... algunas palabras no están en el lugar correcto. ¡Vuelve a intentarlo!";
@@ -412,7 +418,105 @@ document.getElementById('level1-continue-btn').addEventListener('click', () => {
                      feedbackEl.textContent += " Pista: arrastra cada palabra al espacio que mejor complete la frase.";
                  }
                  feedbackEl.className = 'mt-4 text-center font-medium text-red-600';
-                 playSound(failSound);
+                playSound(failSound);
+            }
+        });
+
+        // --- LÓGICA DEL NIVEL 3: VERDADERO O FALSO ---
+        const level3Data = [
+            { id: 'q1', text: 'El Storytelling Digital usa elementos multimedia.', answer: true },
+            { id: 'q2', text: 'La interacci\u00f3n con la audiencia no es importante.', answer: false },
+            { id: 'q3', text: 'Las historias digitales pueden ser no lineales.', answer: true }
+        ];
+
+        let level3Interval = null;
+        let level3TimeLeft = 180;
+
+        function initLevel3() {
+            const container = document.getElementById('level3-questions');
+            const feedbackEl = document.getElementById('level3-feedback');
+            const timerEl = document.getElementById('level3-timer');
+            document.getElementById('level3-check-btn').disabled = false;
+            container.innerHTML = '';
+            feedbackEl.textContent = '';
+            timerEl.textContent = '';
+
+            level3Data.forEach(q => {
+                container.innerHTML += `<div><p class="font-medium">${q.text}</p>
+                    <label class="mr-4"><input type="radio" name="${q.id}" value="true"> Verdadero</label>
+                    <label><input type="radio" name="${q.id}" value="false"> Falso</label>
+                </div>`;
+            });
+
+            startLevel3Timer();
+        }
+
+        function startLevel3Timer() {
+            clearInterval(level3Interval);
+            level3TimeLeft = 180;
+            const timerEl = document.getElementById('level3-timer');
+            timerEl.textContent = formatTime(level3TimeLeft);
+            level3Interval = setInterval(() => {
+                level3TimeLeft--;
+                timerEl.textContent = formatTime(level3TimeLeft);
+                if (level3TimeLeft <= 0) {
+                    clearInterval(level3Interval);
+                    disableLevel3();
+                    const feedback = document.getElementById('level3-feedback');
+                    feedback.textContent = '¡Tiempo agotado!';
+                    feedback.className = 'mt-4 text-center font-medium text-red-600';
+                }
+            }, 1000);
+        }
+
+        function formatTime(seconds) {
+            const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+            const s = String(seconds % 60).padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        function disableLevel3() {
+            document.getElementById('level3-check-btn').disabled = true;
+            document.querySelectorAll('#level3-questions input').forEach(inp => inp.disabled = true);
+        }
+
+        document.getElementById('level3-check-btn').addEventListener('click', () => {
+            const feedbackEl = document.getElementById('level3-feedback');
+            let allAnswered = true;
+            let allCorrect = true;
+
+            level3Data.forEach(q => {
+                const selected = document.querySelector(`input[name="${q.id}"]:checked`);
+                if (!selected) {
+                    allAnswered = false;
+                    allCorrect = false;
+                    return;
+                }
+                if ((selected.value === 'true') !== q.answer) {
+                    allCorrect = false;
+                }
+            });
+
+            if (!allAnswered) {
+                feedbackEl.textContent = 'Responde todas las preguntas.';
+                feedbackEl.className = 'mt-4 text-center font-medium text-red-600';
+                return;
+            }
+
+            clearInterval(level3Interval);
+            disableLevel3();
+
+            if (allCorrect) {
+                feedbackEl.textContent = '\u00a1Muy bien! Has completado el cuestionario.';
+                feedbackEl.className = 'mt-4 text-center font-medium text-green-600';
+                updateScore(50);
+                awardBadge();
+                playSound(successSound);
+                setTimeout(() => showScreen('final-screen'), 1500);
+            } else {
+                feedbackEl.textContent = 'Hay respuestas incorrectas.';
+                feedbackEl.className = 'mt-4 text-center font-medium text-red-600';
+                playSound(failSound);
             }
         });
 
@@ -428,12 +532,20 @@ document.getElementById('restart-btn').addEventListener('click', () => {
                 zone.className = 'drop-zone inline-block align-middle px-4 py-1 rounded-lg mx-1 min-w-[120px]';
                 zone.style.borderColor = '';
             });
-            document.getElementById('draggable-options').innerHTML = '';
-            document.getElementById('level2-feedback').textContent = '';
-            
+    document.getElementById('draggable-options').innerHTML = '';
+    document.getElementById('level2-feedback').textContent = '';
+
+            // Resetear estado del Nivel 3
+            clearInterval(level3Interval);
+            document.getElementById('level3-questions').innerHTML = '';
+            document.getElementById('level3-feedback').textContent = '';
+            document.getElementById('level3-timer').textContent = '';
+            document.getElementById('level3-check-btn').disabled = false;
+
             // Volver a la pantalla de bienvenida
     unlockedLevels['level-1'] = false;
     unlockedLevels['level-2'] = false;
+    unlockedLevels['level-3'] = false;
     showScreen('start-screen');
     playSound(startSound);
 });
