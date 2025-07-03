@@ -1,0 +1,51 @@
+/* Estilos personalizados para mejorar la apariencia */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+body {
+    font-family: 'Inter', sans-serif;
+}
+.main-container {
+    max-width: 800px;
+    margin: auto;
+}
+/* Ocultar pantallas por defecto */
+.screen {
+    display: none;
+}
+/* Mostrar la pantalla activa */
+.screen.active {
+    display: block;
+}
+/* Estilo para los elementos seleccionados en el Nivel 1 */
+.selectable.selected {
+    border-color: #3b82f6; /* blue-500 */
+    background-color: #dbeafe; /* blue-100 */
+    transform: scale(1.02);
+}
+/* Estilo para los elementos arrastrables en el Nivel 2 */
+.draggable {
+    touch-action: none;
+    cursor: grab;
+    user-select: none;
+}
+/* Estilo visual para el elemento que se está arrastrando */
+.draggable.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+/* Estilo para las zonas de destino del arrastre */
+.drop-zone {
+    border: 2px dashed #9ca3af; /* gray-400 */
+    transition: background-color 0.2s, border-color 0.2s;
+}
+.drop-zone.over {
+    background-color: #dbeafe; /* blue-100 */
+    border-color: #3b82f6; /* blue-500 */
+}
+.drop-zone.filled {
+    border-style: solid;
+    background-color: #f0fdf4; /* green-50 */
+}
+/* Estilo para las líneas de conexión */
+.leader-line {
+    transition: all 0.3s ease-in-out;
+}
