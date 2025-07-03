@@ -114,11 +114,6 @@ body {
     min-width: 60px;
 }
 
-.neon-player {
-    background: radial-gradient(circle, #0ff, #f0f);
-    box-shadow: 0 0 8px #0ff, 0 0 16px #f0f;
-}
-
 .level-btn {
     width: 40px;
     height: 40px;
