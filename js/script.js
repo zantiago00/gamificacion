@@ -4,6 +4,11 @@
 const scoreEl = document.getElementById("score");
 const badgesEl = document.getElementById("badges");
 let score = parseInt(localStorage.getItem("score") || "0");
+const unlockedLevels = {
+    'welcome-screen': true,
+    'level-1': false,
+    'level-2': false
+};
 function updateScore(points){
     score += points;
     scoreEl.textContent = `Puntos: ${score}`;
@@ -46,20 +51,54 @@ scoreEl.textContent = `Puntos: ${score}`;
 
             currentScreen = screenId;
             updateProgressBar();
+            updateNavigation();
         }
         
-        function updateProgressBar() {
-            let progress = 0;
-            if (currentScreen === 'level-1') progress = 0;
-            if (currentScreen === 'level-2') progress = 50;
-            if (currentScreen === 'final-screen') progress = 100;
-            progressBar.style.width = `${progress}%`;
-        }
+function updateProgressBar() {
+    let progress = 0;
+    if (currentScreen === 'level-1') progress = 0;
+    if (currentScreen === 'level-2') progress = 50;
+    if (currentScreen === 'final-screen') progress = 100;
+    progressBar.style.width = `${progress}%`;
+}
 
-        document.getElementById('start-btn').addEventListener('click', () => {
-            showScreen('level-1');
+function updateNavigation() {
+    document.querySelectorAll('.level-btn').forEach(btn => {
+        const target = btn.dataset.target;
+        if (unlockedLevels[target]) {
+            btn.classList.remove('locked');
+            btn.disabled = false;
+        } else {
+            btn.classList.add('locked');
+            btn.disabled = true;
+        }
+        if (currentScreen === target) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+}
+
+document.querySelectorAll('.level-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const target = btn.dataset.target;
+        if (!unlockedLevels[target]) return;
+        if (target === 'level-1') {
             initLevel1();
-        });
+        }
+        if (target === 'level-2') {
+            initLevel2();
+        }
+        showScreen(target);
+    });
+});
+
+document.getElementById('start-btn').addEventListener('click', () => {
+    unlockedLevels['level-1'] = true;
+    showScreen('level-1');
+    initLevel1();
+});
 
         // --- LÓGICA DEL NIVEL 1: UNIR CONCEPTOS ---
         const level1Data = {
@@ -169,11 +208,12 @@ let level2Attempts = 0;
             document.getElementById('level1-feedback').textContent = '';
         }
 
-        document.getElementById('level1-continue-btn').addEventListener('click', () => {
-            cleanupLevel1Lines(); // <-- CORRECCIÓN: Limpiar las líneas antes de continuar
-            showScreen('level-2');
-            initLevel2();
-        });
+document.getElementById('level1-continue-btn').addEventListener('click', () => {
+    cleanupLevel1Lines(); // <-- CORRECCIÓN: Limpiar las líneas antes de continuar
+    unlockedLevels['level-2'] = true;
+    showScreen('level-2');
+    initLevel2();
+});
         
         // --- LÓGICA DEL NIVEL 2: ARRASTRAR Y SOLTAR ---
         const level2Data = {
@@ -336,7 +376,7 @@ let level2Attempts = 0;
         });
 
         // --- PANTALLA FINAL Y REINICIO ---
-        document.getElementById('restart-btn').addEventListener('click', () => {
+document.getElementById('restart-btn').addEventListener('click', () => {
             // Resetear estado del Nivel 1
             resetLevel1();
             document.getElementById('level1-continue-btn').disabled = true;
@@ -351,8 +391,10 @@ let level2Attempts = 0;
             document.getElementById('level2-feedback').textContent = '';
             
             // Volver a la pantalla de bienvenida
-            showScreen('welcome-screen');
-        });
+    unlockedLevels['level-1'] = false;
+    unlockedLevels['level-2'] = false;
+    showScreen('welcome-screen');
+});
 
         document.getElementById('reset-score-btn').addEventListener('click', () => {
             score = 0;

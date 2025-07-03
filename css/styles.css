@@ -108,3 +108,34 @@ body {
 .vibrant-btn:hover::after {
     left: 100%;
 }
+
+/* Navegación lateral */
+#level-navigation {
+    min-width: 60px;
+}
+
+.neon-player {
+    background: radial-gradient(circle, #0ff, #f0f);
+    box-shadow: 0 0 8px #0ff, 0 0 16px #f0f;
+}
+
+.level-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #000;
+    background-color: #ffffff;
+    font-weight: 700;
+}
+
+.level-btn.active {
+    box-shadow: 0 0 0 2px #ff0066;
+}
+
+.level-btn.locked {
+    background-color: #d1d5db;
+    color: #6b7280;
+    cursor: not-allowed;
+}
