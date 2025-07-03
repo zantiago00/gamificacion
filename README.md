@@ -8,3 +8,7 @@ Esta pequeña aplicación web implementa un par de retos interactivos para apren
 - **Niveles contextualizados**: cada reto se presenta con una breve introducción.
 
 Para probar el juego abre `index.html` en tu navegador.
+
+## Sonidos
+
+Los efectos de sonido se cargan directamente desde la biblioteca pública de [freeCodeCamp CDN](https://github.com/freeCodeCamp/cdn). No se almacenan archivos binarios en este repositorio; cada botón o acción del juego reproduce su clip en línea.
