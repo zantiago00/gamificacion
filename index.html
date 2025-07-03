@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Storytelling Digital</title>
+    <!-- Inclusión de Tailwind CSS para el diseño -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inclusión de la librería Leader-line para dibujar las líneas -->
+    <script src="https://cdn.jsdelivr.net/npm/leader-line-new@1.1.9/leader-line.min.js"></script>
+    <style>
+        /* Estilos personalizados para mejorar la apariencia */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .main-container {
+            max-width: 800px;
+            margin: auto;
+        }
+        /* Ocultar pantallas por defecto */
+        .screen {
+            display: none;
+        }
+        /* Mostrar la pantalla activa */
+        .screen.active {
+            display: block;
+        }
+        /* Estilo para los elementos seleccionados en el Nivel 1 */
+        .selectable.selected {
+            border-color: #3b82f6; /* blue-500 */
+            background-color: #dbeafe; /* blue-100 */
+            transform: scale(1.02);
+        }
+        /* Estilo para los elementos arrastrables en el Nivel 2 */
+        .draggable {
+            touch-action: none;
+            cursor: grab;
+            user-select: none;
+        }
+        /* Estilo visual para el elemento que se está arrastrando */
+        .draggable.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+        /* Estilo para las zonas de destino del arrastre */
+        .drop-zone {
+            border: 2px dashed #9ca3af; /* gray-400 */
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .drop-zone.over {
+            background-color: #dbeafe; /* blue-100 */
+            border-color: #3b82f6; /* blue-500 */
+        }
+        .drop-zone.filled {
+            border-style: solid;
+            background-color: #f0fdf4; /* green-50 */
+        }
+        /* Estilo para las líneas de conexión */
+        .leader-line {
+            transition: all 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 flex items-center justify-center min-h-screen p-4">
+
+    <div class="main-container w-full">
+        <!-- Barra de Progreso -->
+        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-8">
+            <div id="progress-bar" class="bg-green-500 h-2.5 rounded-full" style="width: 0%; transition: width 0.5s ease-in-out;"></div>
+        </div>
+
+        <!-- Pantalla de Bienvenida -->
+        <div id="welcome-screen" class="screen active text-center p-6 bg-white rounded-xl shadow-md">
+            <h1 class="text-3xl font-bold mb-4 text-gray-900">Introducción al Storytelling Digital</h1>
+            <p class="text-gray-600 mb-2">
+                ¡Todo el mundo habla del Storytelling! Pero cuando les preguntas de qué se trata, las opiniones son muy variadas.
+            </p>
+            <p class="text-gray-600 mb-6">
+                Entender la teoría y sus enfoques puede ser complicado, pero es la clave para aprovechar el ecosistema digital. Esta serie de retos se enfoca en facilitar el aprendizaje del concepto de Storytelling Digital.
+            </p>
+            <button id="start-btn" class="w-full md:w-auto px-8 py-3 bg-gray-800 text-white font-semibold rounded-lg shadow-md hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-opacity-50 transition-transform transform hover:scale-105">
+                Continuar
+            </button>
+        </div>
+
+        <!-- Nivel 1: Unir Conceptos -->
+        <div id="level-1" class="screen p-6 bg-white rounded-xl shadow-md">
+            <h2 class="text-2xl font-bold text-center mb-2 text-gray-900">Nivel 1: Unir Conceptos</h2>
+            <p class="text-center text-gray-600 mb-8">Comencemos por unir el concepto con su definición correcta.</p>
+            <div id="match-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
+                <!-- Columna de Conceptos -->
+                <div id="concepts" class="space-y-4">
+                    <!-- Los conceptos se insertarán aquí dinámicamente -->
+                </div>
+                <!-- Columna de Definiciones -->
+                <div id="definitions" class="space-y-4">
+                    <!-- Las definiciones se insertarán aquí dinámicamente -->
+                </div>
+            </div>
+             <div id="level1-feedback" class="mt-4 text-center font-medium"></div>
+            <div class="text-center mt-8">
+                <button id="level1-continue-btn" class="w-full md:w-auto px-8 py-3 bg-gray-800 text-white font-semibold rounded-lg shadow-md hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-opacity-50 transition-transform transform hover:scale-105 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none" disabled>
+                    Continuar
+                </button>
+            </div>
+        </div>
+
+        <!-- Nivel 2: Arrastrar Palabras -->
+        <div id="level-2" class="screen p-6 bg-white rounded-xl shadow-md">
+            <h2 class="text-2xl font-bold text-center mb-2 text-gray-900">Nivel 2: Poniendo en Práctica</h2>
+            <p class="text-center text-gray-600 mb-8">Ahora vamos a poner en práctica el concepto. Arrastra las palabras para completar la definición.</p>
+            
+            <div class="text-lg text-center leading-loose bg-gray-100 p-6 rounded-lg">
+                <p>
+                    El Storytelling Digital se diferencia del tradicional porque añade elementos
+                    <span id="drop1" class="drop-zone inline-block align-middle px-4 py-1 rounded-lg mx-1 min-w-[120px]">&nbsp;</span>
+                    y le
+                    <span id="drop2" class="drop-zone inline-block align-middle px-4 py-1 rounded-lg mx-1 min-w-[100px]">&nbsp;</span>
+                    al usuario tener una mayor
+                    <span id="drop3" class="drop-zone inline-block align-middle px-4 py-1 rounded-lg mx-1 min-w-[120px]">&nbsp;</span>
+                    con la historia.
+                </p>
+            </div>
+
+            <div id="draggable-options" class="flex flex-wrap justify-center gap-4 mt-8 min-h-[60px] border-2 border-dashed border-gray-300 rounded-lg p-4">
+                <!-- Las opciones arrastrables se insertarán aquí -->
+            </div>
+             <div id="level2-feedback" class="mt-4 text-center font-medium"></div>
+            <div class="text-center mt-8">
+                 <button id="level2-check-btn" class="w-full md:w-auto px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-transform transform hover:scale-105">
+                    Comprobar
+                </button>
+            </div>
+        </div>
+        
+        <!-- Pantalla Final -->
+        <div id="final-screen" class="screen text-center p-6 bg-white rounded-xl shadow-md">
+            <h1 class="text-3xl font-bold mb-4 text-green-600">¡Felicidades!</h1>
+            <p class="text-gray-600 mb-6">
+                Has completado todos los retos y ahora tienes una mejor comprensión del Storytelling Digital.
+            </p>
+            <button id="restart-btn" class="w-full md:w-auto px-8 py-3 bg-gray-800 text-white font-semibold rounded-lg shadow-md hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-opacity-50 transition-transform transform hover:scale-105">
+                Volver a Jugar
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- CONFIGURACIÓN GENERAL ---
+        const screens = document.querySelectorAll('.screen');
+        const progressBar = document.getElementById('progress-bar');
+        
+        let currentScreen = 'welcome-screen';
+        const totalLevels = 2;
+
+        function showScreen(screenId) {
+            screens.forEach(screen => {
+                screen.classList.toggle('active', screen.id === screenId);
+            });
+            currentScreen = screenId;
+            updateProgressBar();
+        }
+        
+        function updateProgressBar() {
+            let progress = 0;
+            if (currentScreen === 'level-1') progress = 0;
+            if (currentScreen === 'level-2') progress = 50;
+            if (currentScreen === 'final-screen') progress = 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        document.getElementById('start-btn').addEventListener('click', () => {
+            showScreen('level-1');
+            initLevel1();
+        });
+
+        // --- LÓGICA DEL NIVEL 1: UNIR CONCEPTOS ---
+        const level1Data = {
+            concepts: [
+                { id: 'c1', text: 'Storytelling Digital' },
+                { id: 'c2', text: 'Interacción' },
+                { id: 'c3', text: 'Multimedia' }
+            ],
+            definitions: [
+                { id: 'd1', text: 'El arte de contar historias usando herramientas digitales y elementos multimedia.', match: 'c1' },
+                { id: 'd2', text: 'La capacidad del usuario para influir en la narrativa o explorarla de forma no lineal.', match: 'c2' },
+                { id: 'd3', text: 'El uso combinado de texto, imágenes, audio y video.', match: 'c3' }
+            ]
+        };
+
+        let selectedConcept = null;
+        let lines = [];
+        let connections = {};
+
+        function initLevel1() {
+            const conceptsContainer = document.getElementById('concepts');
+            const definitionsContainer = document.getElementById('definitions');
+            conceptsContainer.innerHTML = '';
+            definitionsContainer.innerHTML = '';
+            
+            const shuffledDefinitions = [...level1Data.definitions].sort(() => Math.random() - 0.5);
+
+            level1Data.concepts.forEach(concept => {
+                conceptsContainer.innerHTML += `<div id="${concept.id}" class="selectable p-4 border-2 border-gray-300 rounded-lg cursor-pointer transition-all duration-200 hover:bg-gray-100 hover:border-gray-400">${concept.text}</div>`;
+            });
+
+            shuffledDefinitions.forEach(def => {
+                definitionsContainer.innerHTML += `<div id="${def.id}" data-match="${def.match}" class="selectable p-4 border-2 border-gray-300 rounded-lg cursor-pointer transition-all duration-200 hover:bg-gray-100 hover:border-gray-400">${def.text}</div>`;
+            });
+            
+            addLevel1EventListeners();
+        }
+
+        function addLevel1EventListeners() {
+            document.querySelectorAll('#level-1 .selectable').forEach(el => {
+                el.addEventListener('click', handleSelection);
+            });
+        }
+        
+        function handleSelection(event) {
+            const clickedElement = event.currentTarget;
+            if (Object.values(connections).includes(clickedElement.id) || connections[clickedElement.id]) return;
+
+            if (clickedElement.parentElement.id === 'concepts') {
+                if (selectedConcept) selectedConcept.classList.remove('selected');
+                selectedConcept = clickedElement;
+                selectedConcept.classList.add('selected');
+            } else if (clickedElement.parentElement.id === 'definitions' && selectedConcept) {
+                const conceptId = selectedConcept.id;
+                const definitionId = clickedElement.id;
+                connections[conceptId] = definitionId;
+                
+                const color = (clickedElement.dataset.match === conceptId) ? '#22c55e' : '#ef4444';
+                const line = new LeaderLine(selectedConcept, clickedElement, { color: color, size: 4, path: 'fluid', endPlug: 'arrow1' });
+                lines.push(line);
+
+                selectedConcept.classList.remove('selected');
+                selectedConcept = null;
+                checkLevel1Completion();
+            }
+        }
+        
+        function checkLevel1Completion() {
+            const feedbackEl = document.getElementById('level1-feedback');
+            if (Object.keys(connections).length === level1Data.concepts.length) {
+                const isCorrect = Object.entries(connections).every(([conceptId, definitionId]) => {
+                    const definitionEl = document.getElementById(definitionId);
+                    return definitionEl.dataset.match === conceptId;
+                });
+                
+                if (isCorrect) {
+                    feedbackEl.textContent = "¡Excelente! Todas las conexiones son correctas.";
+                    feedbackEl.className = 'mt-4 text-center font-medium text-green-600';
+                    document.getElementById('level1-continue-btn').disabled = false;
+                } else {
+                    feedbackEl.textContent = "Algunas conexiones son incorrectas. ¡Inténtalo de nuevo!";
+                    feedbackEl.className = 'mt-4 text-center font-medium text-red-600';
+                    setTimeout(resetLevel1, 1500);
+                }
+            }
+        }
+        
+        // Función para limpiar solo las líneas
+        function cleanupLevel1Lines() {
+            lines.forEach(line => line.remove());
+            lines = [];
+        }
+
+        function resetLevel1() {
+            cleanupLevel1Lines(); // Usar la nueva función para limpiar líneas
+            connections = {};
+            selectedConcept = null;
+            document.querySelectorAll('#level-1 .selectable').forEach(el => el.classList.remove('selected'));
+            document.getElementById('level1-feedback').textContent = '';
+        }
+
+        document.getElementById('level1-continue-btn').addEventListener('click', () => {
+            cleanupLevel1Lines(); // <-- CORRECCIÓN: Limpiar las líneas antes de continuar
+            showScreen('level-2');
+            initLevel2();
+        });
+        
+        // --- LÓGICA DEL NIVEL 2: ARRASTRAR Y SOLTAR ---
+        const level2Data = {
+            options: [
+                { id: 'opt1', text: 'Multimedia', correctDrop: 'drop1' },
+                { id: 'opt2', text: 'permite', correctDrop: 'drop2' },
+                { id: 'opt3', text: 'interacción', correctDrop: 'drop3' }
+            ]
+        };
+        let draggedItem = null;
+
+        function initLevel2() {
+            const optionsContainer = document.getElementById('draggable-options');
+            optionsContainer.innerHTML = '';
+            const shuffledOptions = [...level2Data.options].sort(() => Math.random() - 0.5);
+            
+            shuffledOptions.forEach(opt => {
+                optionsContainer.innerHTML += `<div id="${opt.id}" class="draggable bg-blue-100 text-blue-800 font-semibold px-5 py-2 rounded-lg shadow" draggable="true">${opt.text}</div>`;
+            });
+
+            addLevel2EventListeners();
+        }
+
+        function addLevel2EventListeners() {
+            document.querySelectorAll('.draggable').forEach(draggable => {
+                draggable.addEventListener('dragstart', handleDragStart);
+                draggable.addEventListener('dragend', handleDragEnd);
+            });
+
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('dragleave', handleDragLeave);
+                zone.addEventListener('drop', handleDrop);
+            });
+
+            const optionsContainer = document.getElementById('draggable-options');
+            optionsContainer.addEventListener('dragover', handleDragOver);
+            optionsContainer.addEventListener('drop', handleDrop);
+        }
+
+        function handleDragStart(e) {
+            draggedItem = e.target;
+            e.dataTransfer.setData('text/plain', e.target.id);
+            setTimeout(() => e.target.classList.add('dragging'), 0);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedItem = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            if (e.currentTarget.classList.contains('drop-zone')) {
+                e.currentTarget.classList.add('over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            if (e.currentTarget.classList.contains('drop-zone')) {
+                e.currentTarget.classList.remove('over');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const dropTarget = e.currentTarget;
+            if (!draggedItem) return;
+
+            if (dropTarget.classList.contains('drop-zone')) {
+                dropTarget.classList.remove('over');
+            }
+
+            if (dropTarget.classList.contains('drop-zone') && dropTarget.children.length > 0) {
+                const existingEl = dropTarget.firstElementChild;
+                document.getElementById('draggable-options').appendChild(existingEl);
+                dropTarget.classList.remove('filled');
+            }
+
+            dropTarget.appendChild(draggedItem);
+
+            if (dropTarget.classList.contains('drop-zone')) {
+                dropTarget.classList.add('filled');
+            }
+        }
+        
+        document.getElementById('level2-check-btn').addEventListener('click', () => {
+            const feedbackEl = document.getElementById('level2-feedback');
+            let allCorrect = true;
+            
+            level2Data.options.forEach(option => {
+                const droppedEl = document.getElementById(option.id);
+                const parentId = droppedEl.parentElement.id;
+                const dropZone = document.getElementById(option.correctDrop);
+
+                if (parentId === option.correctDrop) {
+                    dropZone.style.borderColor = '#22c55e';
+                } else {
+                    allCorrect = false;
+                    if(droppedEl.parentElement.classList.contains('drop-zone')){
+                        droppedEl.parentElement.style.borderColor = '#ef4444';
+                    }
+                }
+            });
+            
+            if(allCorrect) {
+                feedbackEl.textContent = "¡Correcto! Has completado la definición perfectamente.";
+                feedbackEl.className = 'mt-4 text-center font-medium text-green-600';
+                setTimeout(() => showScreen('final-screen'), 1500);
+            } else {
+                 feedbackEl.textContent = "Casi... algunas palabras no están en el lugar correcto. ¡Vuelve a intentarlo!";
+                 feedbackEl.className = 'mt-4 text-center font-medium text-red-600';
+            }
+        });
+
+        // --- PANTALLA FINAL Y REINICIO ---
+        document.getElementById('restart-btn').addEventListener('click', () => {
+            // Resetear estado del Nivel 1
+            resetLevel1();
+            document.getElementById('level1-continue-btn').disabled = true;
+
+            // Resetear estado del Nivel 2
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.innerHTML = '&nbsp;';
+                zone.className = 'drop-zone inline-block align-middle px-4 py-1 rounded-lg mx-1 min-w-[120px]';
+                zone.style.borderColor = '';
+            });
+            document.getElementById('draggable-options').innerHTML = '';
+            document.getElementById('level2-feedback').textContent = '';
+            
+            // Volver a la pantalla de bienvenida
+            showScreen('welcome-screen');
+        });
+
+        // Iniciar la aplicación
+        showScreen('welcome-screen');
+
+    </script>
+</body>
+</html>
