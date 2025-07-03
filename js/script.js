@@ -9,6 +9,25 @@ const unlockedLevels = {
     'level-1': false,
     'level-2': false
 };
+
+// --- SONIDOS ---
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playClickSound() {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = 880;
+    gain.gain.value = 0.1;
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.1);
+}
+function addAudioToButtons() {
+    document.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', playClickSound);
+    });
+}
 function updateScore(points){
     score += points;
     scoreEl.textContent = `Puntos: ${score}`;
@@ -405,4 +424,5 @@ document.getElementById('restart-btn').addEventListener('click', () => {
 
         // Iniciar la aplicación
         showScreen('welcome-screen');
+        addAudioToButtons();
 
